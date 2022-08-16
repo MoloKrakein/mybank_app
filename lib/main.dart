@@ -59,7 +59,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 icon: Icon(Icons.add))
           ],
         ),
-      );
+        body: Center(child: IconButton(onPressed: (){Navigator.push(context,MaterialPageRoute(builder: (context)=>const userPage()));}, icon: Icon(Icons.arrow_forward))
+      ));
 }
 
 class userPage extends StatefulWidget {
