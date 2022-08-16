@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "745421139695",
+    "project_id": "crud-ba49a",
+    "storage_bucket": "crud-ba49a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:745421139695:android:bf99db09495a9c3a13751a",
+        "android_client_info": {
+          "package_name": "com.example.mybank_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "745421139695-nnm1vd2ee6pfbm7ri9mrr54tehmrv83c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD7vAEK0vUF18ePklYFK0F8I8tL2i70V-Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "745421139695-nnm1vd2ee6pfbm7ri9mrr54tehmrv83c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
