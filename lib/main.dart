@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/services.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -56,7 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
             IconButton(
                 onPressed: () {
                   final name = controller.text;
-                  createUser(name: name);
+                  // createUser(name: name);
                 },
                 icon: Icon(Icons.add))
           ],
@@ -87,6 +88,7 @@ class _userPageState extends State<userPage> {
   String nama = '';
   String finalkategori = "";
   int value = 0;
+  var rupiah ="";
   //Controller
   TextEditingController namaController = TextEditingController();
   TextEditingController valueController = TextEditingController();
@@ -108,10 +110,10 @@ class _userPageState extends State<userPage> {
                     //Namaewa
                     controller: namaController,
                     decoration:
-                        const InputDecoration(hintText: 'Enter your name'),
+                        const InputDecoration(hintText: 'Masukan Nama Pengeluaran'),
                     validator: (String? value) {
                       if (value == null || value.isEmpty) {
-                        return 'name still empty';
+                        return 'Nama belum diisi';
                       }
                       return null;
                     },
@@ -137,21 +139,32 @@ class _userPageState extends State<userPage> {
                       }),
                   TextFormField(
                     //Isinyaewa
+                    onChanged: (String){
+                      setState((){
+                        rupiah = valueController.text;
+                      });
+                    },
+                    
+                    keyboardType: TextInputType.number,
+                    inputFormatters: <FilteringTextInputFormatter>[FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))],
                     controller: valueController,
-                    decoration: const InputDecoration(hintText: 'Value'),
+                    decoration: const InputDecoration(hintText: 'Rp.'),
                     validator: (String? value) {
                       if (value == null || value.isEmpty) {
-                        return 'value still empty';
+                        return 'Nominal masih kosong';
                       }
                       return null;
                     },
                   ),
+                  Text(rupiah.toString(),style: TextStyle(fontWeight: FontWeight.bold),),
                   Padding(
                     padding: EdgeInsets.symmetric(vertical: 10),
                     child: ElevatedButton(
                       child: Text("Submit"),
                       onPressed: () {
-                        if (_formKey.currentState!.validate()) {}
+                        if (_formKey.currentState!.validate()) {
+                          createUser(name: namaController.text,kategori: finalkategori,val: int.parse(valueController.text));
+                        }
                       },
                     ),
                   ),
@@ -182,7 +195,7 @@ class _userPageState extends State<userPage> {
       );
 }
 
-Future createUser({required String name}) async {
+Future createUser({required String name,required String kategori,required int val}) async {
   int idgenerated = RNG();
   final docUser = FirebaseFirestore.instance
       .collection('users')
@@ -191,7 +204,8 @@ Future createUser({required String name}) async {
   final out = output(
     id: idgenerated.toString(),
     name: name,
-    outval: 80,
+    outval: val,
+    kategori: kategori
   );
   final json = out.toJson();
   await docUser.set(json);
@@ -206,10 +220,12 @@ int RNG() {
 class output {
   String id;
   final String name;
+  final kategori;
   final int outval;
 
   output({
     this.id = '',
+    required this.kategori,
     required this.name,
     required this.outval,
   });
@@ -217,6 +233,7 @@ class output {
   Map<String, dynamic> toJson() => {
         'id': id,
         'name': name,
+        'kategori': kategori,
         "outval": outval,
       };
 }
