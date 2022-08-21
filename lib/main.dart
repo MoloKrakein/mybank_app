@@ -30,7 +30,8 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const userPage(),
+      // home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
@@ -44,6 +45,7 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
+//Tampilkan Data (Read)
 class _MyHomePageState extends State<MyHomePage> {
   final controller = TextEditingController();
   @override
@@ -59,8 +61,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 icon: Icon(Icons.add))
           ],
         ),
-        body: Center(child: IconButton(onPressed: (){Navigator.push(context,MaterialPageRoute(builder: (context)=>const userPage()));}, icon: Icon(Icons.arrow_forward))
-      ));
+
+        //   body: Center(child: IconButton(onPressed: (){Navigator.push(context,MaterialPageRoute(builder: (context)=>const userPage()));}, icon: Icon(Icons.arrow_forward))
+        // ));
+      );
 }
 
 class userPage extends StatefulWidget {
@@ -71,20 +75,116 @@ class userPage extends StatefulWidget {
 }
 
 class _userPageState extends State<userPage> {
+  //Variabbel
+  var kategori = <String>[
+    'Kategori',
+    'Food n Beverage',
+    'Hutang',
+    'Barang Pribadi',
+    'Lain-lain'
+  ];
+  int kat = 0;
+  String nama = '';
+  String finalkategori = "";
+  int value = 0;
+  //Controller
+  TextEditingController namaController = TextEditingController();
+  TextEditingController valueController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   @override
-  Widget build(BuildContext context) =>
-    Scaffold(appBar: AppBar(title: Text("Tambah Pengeluaran"),),
-    body: ListView(
-      padding: EdgeInsets.all(25),
-      children: [],
-    ),
-    );
-  
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(
+          title: Text("Tambah Pengeluaran"),
+        ),
+        body: ListView(
+          padding: EdgeInsets.all(25),
+          children: [
+            Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextFormField(
+                    //Namaewa
+                    decoration:
+                        const InputDecoration(hintText: 'Enter your name'),
+                    validator: (String? value) {
+                      if (value == null || value.isEmpty) {
+                        return 'name still empty';
+                      }
+                      return null;
+                    },
+                  ),
+                  DropdownButton<String>(
+                      icon: const Icon(Icons.arrow_drop_down),
+                      style: const TextStyle(color: Colors.blue),
+                      underline: Container(
+                        color: Colors.blueAccent,
+                      ),
+                      value: kat == null ? null : kategori[kat],
+                      items: kategori.map((String value) {
+                        return new DropdownMenuItem(
+                          child: new Text(value),
+                          value: value,
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          finalkategori = value!;
+                          kat = kategori.indexOf(value);
+                        });
+                      }),
+                  TextFormField(
+                    //Isinyaewa
+                    decoration: const InputDecoration(hintText: 'Value'),
+                    validator: (String? value) {
+                      if (value == null || value.isEmpty) {
+                        return 'value still empty';
+                      }
+                      return null;
+                    },
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 10),
+                    child: ElevatedButton(
+                      child: Text("Submit"),
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {}
+                      },
+                    ),
+                  ),
+                  Column(
+                    children: [
+                      Row(
+                        children: [
+                          Text("Nama Value :"), Text(nama),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Text("Kategori Value :"), Text(finalkategori),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Text("Harga Value :"), Text(value.toString()),
+                        ],
+                      )
+                    ],
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
+      );
 }
 
 Future createUser({required String name}) async {
   int idgenerated = RNG();
-  final docUser = FirebaseFirestore.instance.collection('users').doc(idgenerated.toString());
+  final docUser = FirebaseFirestore.instance
+      .collection('users')
+      .doc(idgenerated.toString());
 
   final out = output(
     id: idgenerated.toString(),
