@@ -106,6 +106,7 @@ class _userPageState extends State<userPage> {
                 children: [
                   TextFormField(
                     //Namaewa
+                    controller: namaController,
                     decoration:
                         const InputDecoration(hintText: 'Enter your name'),
                     validator: (String? value) {
@@ -136,6 +137,7 @@ class _userPageState extends State<userPage> {
                       }),
                   TextFormField(
                     //Isinyaewa
+                    controller: valueController,
                     decoration: const InputDecoration(hintText: 'Value'),
                     validator: (String? value) {
                       if (value == null || value.isEmpty) {
@@ -157,7 +159,7 @@ class _userPageState extends State<userPage> {
                     children: [
                       Row(
                         children: [
-                          Text("Nama Value :"), Text(nama),
+                          Text("Nama Value :"), Text(namaController.text),
                         ],
                       ),
                       Row(
@@ -167,7 +169,7 @@ class _userPageState extends State<userPage> {
                       ),
                       Row(
                         children: [
-                          Text("Harga Value :"), Text(value.toString()),
+                          Text("Harga Value :"), Text(valueController.text),
                         ],
                       )
                     ],
