@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -78,7 +79,6 @@ class userPage extends StatefulWidget {
 class _userPageState extends State<userPage> {
   //Variabbel
   var kategori = <String>[
-    'Kategori',
     'Food n Beverage',
     'Hutang',
     'Barang Pribadi',
@@ -88,7 +88,8 @@ class _userPageState extends State<userPage> {
   String nama = '';
   String finalkategori = "";
   int value = 0;
-  var rupiah ="";
+  var rupiah = 0;
+  final convert = new NumberFormat("#,##0.000");
   //Controller
   TextEditingController namaController = TextEditingController();
   TextEditingController valueController = TextEditingController();
@@ -119,6 +120,7 @@ class _userPageState extends State<userPage> {
                     },
                   ),
                   DropdownButton<String>(
+                    hint:Text("Pilih"),
                       icon: const Icon(Icons.arrow_drop_down),
                       style: const TextStyle(color: Colors.blue),
                       underline: Container(
@@ -139,9 +141,14 @@ class _userPageState extends State<userPage> {
                       }),
                   TextFormField(
                     //Isinyaewa
+                    
                     onChanged: (String){
                       setState((){
-                        rupiah = valueController.text;
+                        if (valueController.text.isNotEmpty) {
+                        rupiah = int.parse(valueController.text);
+                        }else{
+                          rupiah = 0;
+                        }
                       });
                     },
                     
@@ -156,7 +163,10 @@ class _userPageState extends State<userPage> {
                       return null;
                     },
                   ),
-                  Text(rupiah.toString(),style: TextStyle(fontWeight: FontWeight.bold),),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Text(toRupiah.convertIDR(rupiah, 2),style: TextStyle(fontWeight: FontWeight.bold),),
+                  ),
                   Padding(
                     padding: EdgeInsets.symmetric(vertical: 10),
                     child: ElevatedButton(
@@ -215,6 +225,15 @@ int RNG() {
   Random random = new Random();
   int rng = random.nextInt(10000);
   return rng;
+}
+
+class toRupiah{
+  static String convertIDR(dynamic number,int decimal){
+    NumberFormat currencyFormatter = NumberFormat.currency(
+      locale: 'id',symbol: 'Rp. ',decimalDigits: decimal,
+    );
+    return currencyFormatter.format(number);
+  }
 }
 
 class output {
