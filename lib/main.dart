@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:mybank_app/userdata.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,7 +33,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const userPage(),
+      home: const UserData(),
       // home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
@@ -69,6 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
       );
 }
 
+//Tambah Data
 class userPage extends StatefulWidget {
   const userPage({Key? key}) : super(key: key);
 
@@ -318,3 +320,4 @@ class output {
         "jam":jam,
       };
 }
+
