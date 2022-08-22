@@ -86,8 +86,19 @@ class _userPageState extends State<userPage> {
   ];
   int kat = 0;
   String nama = '';
-  String finalkategori = "";
+  String finalkategori = "Lain-lain";
   int value = 0;
+  //////////////////// TANGGAL CENTER /////////////
+  // var formatedDate= "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now()}";
+  String tanggal = DateTime.now().day.toString() +
+      "/" +
+      DateTime.now().month.toString() +
+      "/" +
+      DateTime.now().year.toString();
+  String jam =
+      DateTime.now().hour.toString() + ":" + DateTime.now().minute.toString();
+  DateTime? _dateTime;
+  ////////////////////////////////////////////////
   var rupiah = 0;
   final convert = new NumberFormat("#,##0.000");
   //Controller
@@ -110,8 +121,8 @@ class _userPageState extends State<userPage> {
                   TextFormField(
                     //Namaewa
                     controller: namaController,
-                    decoration:
-                        const InputDecoration(hintText: 'Masukan Nama Pengeluaran'),
+                    decoration: const InputDecoration(
+                        hintText: 'Masukan Nama Pengeluaran'),
                     validator: (String? value) {
                       if (value == null || value.isEmpty) {
                         return 'Nama belum diisi';
@@ -119,41 +130,70 @@ class _userPageState extends State<userPage> {
                       return null;
                     },
                   ),
-                  DropdownButton<String>(
-                    hint:Text("Pilih"),
-                      icon: const Icon(Icons.arrow_drop_down),
-                      style: const TextStyle(color: Colors.blue),
-                      underline: Container(
-                        color: Colors.blueAccent,
+                  Row(
+                    children: <Widget>[
+                      SizedBox(
+                        child: DropdownButton<String>(
+                            hint: Text("Pilih"),
+                            icon: const Icon(Icons.arrow_drop_down),
+                            style: const TextStyle(color: Colors.blue),
+                            underline: Container(
+                              color: Colors.blueAccent,
+                            ),
+                            value: kategori[kat],
+                            items: kategori.map((String value) {
+                              return new DropdownMenuItem(
+                                child: new Text(value),
+                                value: value,
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                finalkategori = value!;
+                                kat = kategori.indexOf(value);
+                              });
+                            }),
                       ),
-                      value: kat == null ? null : kategori[kat],
-                      items: kategori.map((String value) {
-                        return new DropdownMenuItem(
-                          child: new Text(value),
-                          value: value,
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          finalkategori = value!;
-                          kat = kategori.indexOf(value);
-                        });
-                      }),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 3),
+                        child: ElevatedButton(
+                            onPressed: () {
+                              showDatePicker(
+                                      context: context,
+                                      initialDate: DateTime.now(),
+                                      firstDate: DateTime(2021),
+                                      lastDate: DateTime(2069),
+                                      )
+                                  .then((date) => {setState(() {
+                                    _dateTime=date;
+                                    tanggal=DateFormat('dd/MM/yyyy').format(date!).toString();
+                                  })});
+                            },
+                            child: Text(_dateTime == null? tanggal:tanggal)),
+                      ),
+                      ElevatedButton(onPressed: () {
+                        showTimePicker(context: context, initialTime: TimeOfDay.now()).then((value) => {setState((){
+                          jam = value!.hour.toString()+":"+value.minute.toString();
+                        })});
+                      }, child: Text(jam)),
+                    ],
+                  ),
                   TextFormField(
                     //Isinyaewa
-                    
-                    onChanged: (String){
-                      setState((){
+                    onChanged: (String) {
+                      setState(() {
                         if (valueController.text.isNotEmpty) {
-                        rupiah = int.parse(valueController.text);
-                        }else{
+                          rupiah = int.parse(valueController.text);
+                        } else {
                           rupiah = 0;
                         }
                       });
                     },
-                    
+
                     keyboardType: TextInputType.number,
-                    inputFormatters: <FilteringTextInputFormatter>[FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))],
+                    inputFormatters: <FilteringTextInputFormatter>[
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
+                    ],
                     controller: valueController,
                     decoration: const InputDecoration(hintText: 'Rp.'),
                     validator: (String? value) {
@@ -165,7 +205,10 @@ class _userPageState extends State<userPage> {
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: Text(toRupiah.convertIDR(rupiah, 2),style: TextStyle(fontWeight: FontWeight.bold),),
+                    child: Text(
+                      toRupiah.convertIDR(rupiah, 2),
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                   ),
                   Padding(
                     padding: EdgeInsets.symmetric(vertical: 10),
@@ -173,30 +216,33 @@ class _userPageState extends State<userPage> {
                       child: Text("Submit"),
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
-                          createUser(name: namaController.text,kategori: finalkategori,val: int.parse(valueController.text));
+                          Future.delayed(
+                              Duration.zero, () => successAlert(context));
+                          createUser(
+                              name: namaController.text,
+                              kategori: finalkategori,
+                              tanggal: tanggal,
+                              val: int.parse(valueController.text),
+                              jam:jam);
                         }
                       },
                     ),
                   ),
-                  Column(
-                    children: [
-                      Row(
-                        children: [
-                          Text("Nama Value :"), Text(namaController.text),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Text("Kategori Value :"), Text(finalkategori),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Text("Harga Value :"), Text(valueController.text),
-                        ],
-                      )
-                    ],
-                  )
+                  // Row(
+                  //   children: [
+                  //     Text("Nama Value :"), Text(namaController.text),
+                  //   ],
+                  // ),
+                  // Row(
+                  //   children: [
+                  //     Text("Kategori Value :"), Text(finalkategori),
+                  //   ],
+                  // ),
+                  // Row(
+                  //   children: [
+                  //     Text("Harga Value :"), Text(valueController.text),
+                  //   ],
+                  // )
                 ],
               ),
             )
@@ -205,20 +251,28 @@ class _userPageState extends State<userPage> {
       );
 }
 
-Future createUser({required String name,required String kategori,required int val}) async {
+Future createUser(
+    {required String name, required String kategori, required int val, required String tanggal, required String jam}) async {
   int idgenerated = RNG();
   final docUser = FirebaseFirestore.instance
       .collection('users')
       .doc(idgenerated.toString());
 
   final out = output(
-    id: idgenerated.toString(),
-    name: name,
-    outval: val,
-    kategori: kategori
-  );
+      id: idgenerated.toString(), name: name, outval: val, kategori: kategori, jam: jam,tanggal: tanggal);
   final json = out.toJson();
   await docUser.set(json);
+}
+
+void successAlert(BuildContext context) {
+  showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+            content: Text("Data Berhasil Disimpan !"),
+            actions: [
+              // TextButton(onPressed: (){}, child: Text("OK"))
+            ],
+          ));
 }
 
 int RNG() {
@@ -227,10 +281,12 @@ int RNG() {
   return rng;
 }
 
-class toRupiah{
-  static String convertIDR(dynamic number,int decimal){
+class toRupiah {
+  static String convertIDR(dynamic number, int decimal) {
     NumberFormat currencyFormatter = NumberFormat.currency(
-      locale: 'id',symbol: 'Rp. ',decimalDigits: decimal,
+      locale: 'id',
+      symbol: 'Rp. ',
+      decimalDigits: decimal,
     );
     return currencyFormatter.format(number);
   }
@@ -240,12 +296,16 @@ class output {
   String id;
   final String name;
   final kategori;
+  final tanggal;
+  final jam;
   final int outval;
 
   output({
     this.id = '',
-    required this.kategori,
     required this.name,
+    required this.kategori,
+    required this.jam,
+    required this.tanggal,
     required this.outval,
   });
 
@@ -253,6 +313,8 @@ class output {
         'id': id,
         'name': name,
         'kategori': kategori,
-        "outval": outval,
+        "harga": outval,
+        "tanggal":tanggal,
+        "jam":jam,
       };
 }
