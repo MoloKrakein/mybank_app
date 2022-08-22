@@ -3,6 +3,7 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'main.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class UserData extends StatefulWidget {
   const UserData({Key? key}) : super(key: key);
@@ -17,6 +18,7 @@ class _UserDataState extends State<UserData> {
         appBar: AppBar(
           title: Text("Data Pengeluaran"),
         ),
+        floatingActionButton: FloatingActionButton(child: Icon(Icons.add_box),onPressed: (){Navigator.push(context,MaterialPageRoute(builder: (context)=>const userPage()));}),
         body: StreamBuilder<List<User>>(stream: readUser(), builder: (context, snapshot) {
           if (snapshot.hasError){
             return Text('Woops somthing break this thing!\nError : '+snapshot.error.toString());
@@ -45,7 +47,8 @@ class _UserDataState extends State<UserData> {
 Widget listBuilder(User user) => ListTile(
   leading: CircleAvatar(child: Icon(getIconFromTxt('${user.kategori}'))),
   title: Text(user.outval.toString()),
-  subtitle: Text(user.name)
+  subtitle: Text(user.name),
+  // trailing: ,
 );
 // Map<String, dynamic> toJson() => {
 //         'id': id,
@@ -55,6 +58,7 @@ Widget listBuilder(User user) => ListTile(
 //         "tanggal":tanggal,
 //         "jam":jam,
 //       };
+
 
 IconData getIconFromTxt(String iconName){
   switch(iconName){
