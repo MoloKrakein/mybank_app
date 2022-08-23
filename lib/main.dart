@@ -90,6 +90,8 @@ class _userPageState extends State<userPage> {
   String nama = '';
   String finalkategori = "Lain-lain";
   int value = 0;
+  DateTime tanggalfinal = DateTime.now();
+
   //////////////////// TANGGAL CENTER /////////////
   // var formatedDate= "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now()}";
   String tanggal = DateTime.now().day.toString() +
@@ -107,6 +109,7 @@ class _userPageState extends State<userPage> {
   TextEditingController namaController = TextEditingController();
   TextEditingController valueController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
@@ -122,6 +125,7 @@ class _userPageState extends State<userPage> {
                 children: [
                   TextFormField(
                     //Namaewa
+                    autofocus: true,
                     controller: namaController,
                     decoration: const InputDecoration(
                         hintText: 'Masukan Nama Pengeluaran'),
@@ -161,23 +165,36 @@ class _userPageState extends State<userPage> {
                         child: ElevatedButton(
                             onPressed: () {
                               showDatePicker(
-                                      context: context,
-                                      initialDate: DateTime.now(),
-                                      firstDate: DateTime(2021),
-                                      lastDate: DateTime(2069),
-                                      )
-                                  .then((date) => {setState(() {
-                                    _dateTime=date;
-                                    tanggal=DateFormat('dd/MM/yyyy').format(date!).toString();
-                                  })});
+                                context: context,
+                                initialDate: DateTime.now(),
+                                firstDate: DateTime(2021),
+                                lastDate: DateTime(2069),
+                              ).then((date) => {
+                                    setState(() {
+                                      _dateTime = date;
+                                      // _dateTime=tanggalfinal;
+                                      tanggal = DateFormat('dd/MM/yyyy')
+                                          .format(date!)
+                                          .toString();
+                                    })
+                                  });
                             },
-                            child: Text(_dateTime == null? tanggal:tanggal)),
+                            child: Text(_dateTime == null ? tanggal : tanggal)),
                       ),
-                      ElevatedButton(onPressed: () {
-                        showTimePicker(context: context, initialTime: TimeOfDay.now()).then((value) => {setState((){
-                          jam = value!.hour.toString()+":"+value.minute.toString();
-                        })});
-                      }, child: Text(jam)),
+                      ElevatedButton(
+                          onPressed: () {
+                            showTimePicker(
+                                    context: context,
+                                    initialTime: TimeOfDay.now())
+                                .then((value) => {
+                                      setState(() {
+                                        jam = value!.hour.toString() +
+                                            ":" +
+                                            value.minute.toString();
+                                      })
+                                    });
+                          },
+                          child: Text(jam)),
                     ],
                   ),
                   TextFormField(
@@ -212,20 +229,31 @@ class _userPageState extends State<userPage> {
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
+                  // SUBMIT BUTTON !!!!
                   Padding(
                     padding: EdgeInsets.symmetric(vertical: 10),
                     child: ElevatedButton(
                       child: Text("Submit"),
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
+                          // _dateTime=tanggalfinal;
+                            if(_dateTime == null){
+                              _dateTime = DateTime.now();
+                            }
+                          // tglTimeStamp = DateTime().millisecondsSinceEpoch;
                           Future.delayed(
                               Duration.zero, () => successAlert(context));
                           createUser(
                               name: namaController.text,
                               kategori: finalkategori,
-                              tanggal: tanggal,
+                              tanggal: _dateTime!,
                               val: int.parse(valueController.text),
-                              jam:jam);
+                              jam: jam);
+                            // _formKey.currentContext?.reset();
+                            namaController.clear();
+                            valueController.clear();
+                            // rupiah = 0;
+                            
                         }
                       },
                     ),
@@ -254,14 +282,23 @@ class _userPageState extends State<userPage> {
 }
 
 Future createUser(
-    {required String name, required String kategori, required int val, required String tanggal, required String jam}) async {
+    {required String name,
+    required String kategori,
+    required int val,
+    required DateTime tanggal,
+    required String jam}) async {
   int idgenerated = RNG();
   final docUser = FirebaseFirestore.instance
       .collection('users')
       .doc(idgenerated.toString());
 
   final out = output(
-      id: idgenerated.toString(), name: name, outval: val, kategori: kategori, jam: jam,tanggal: tanggal);
+      id: idgenerated.toString(),
+      name: name,
+      outval: val,
+      kategori: kategori,
+      jam: jam,
+      tanggal: tanggal);
   final json = out.toJson();
   await docUser.set(json);
 }
@@ -272,7 +309,12 @@ void successAlert(BuildContext context) {
       builder: (context) => AlertDialog(
             content: Text("Data Berhasil Disimpan !"),
             actions: [
-              // TextButton(onPressed: (){}, child: Text("OK"))
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context,
+                        MaterialPageRoute(builder: ((context) => UserData())));
+                  },
+                  child: Text("OK"))
             ],
           ));
 }
@@ -316,8 +358,7 @@ class output {
         'name': name,
         'kategori': kategori,
         "harga": outval,
-        "tanggal":tanggal,
-        "jam":jam,
+        "tanggal": tanggal,
+        "jam": jam,
       };
 }
-

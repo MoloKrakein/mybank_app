@@ -83,19 +83,20 @@ IconData getIconFromTxt(String iconName){
 
 class User {
   String id;
+  late Timestamp timestamp;
   final String name;
   final int outval;
   final String kategori;
-  final String tanggal;
   final String jam;
 
   User({
     this.id = '',
+    required Timestamp,
     required this.name,
     required this.outval,
     required this.kategori,
-    required this.tanggal,
     required this.jam,
+    
   });
 
   static User fromJson(Map<String, dynamic> json) => User(
@@ -103,7 +104,7 @@ class User {
         name: json['name'],
         kategori: json['kategori'],
         outval: json['harga'],
-        tanggal: json['tanggal'],
+        Timestamp: json['tanggal'],
         jam: json['jam'],
       );
 }
